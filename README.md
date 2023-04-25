@@ -15,7 +15,7 @@ Este proyecto puede ser utilizado como base para el desarrollo de otras APIs RES
 
 ## API Reference
 
-#### **Get all customer**
+### **Get all customer**
 
 ```http
   GET /api/clientes
@@ -23,7 +23,7 @@ Este proyecto puede ser utilizado como base para el desarrollo de otras APIs RES
 | Response | 200 OK |      |
 | :-------- | :------- | :-------------------------------- |
 
-#### **Get customer by id**
+### **Get customer by id**
 
 ```http
   GET /api/clientes/{id}
@@ -36,7 +36,7 @@ Este proyecto puede ser utilizado como base para el desarrollo de otras APIs RES
 | Response | 200 OK |   404 Not Found                  |
 | :-------- | :------- | :-------------------------------- |
 
-#### **Create customer**
+### **Create customer**
 
 ```http
   POST /api/clientes
@@ -46,7 +46,7 @@ Este proyecto puede ser utilizado como base para el desarrollo de otras APIs RES
 | :-------- | :------- | :-------------------------------- |
 
 
-#### **Update customer**
+### **Update customer**
 ```http
   PUT /api/clientes/{id}
 ```
@@ -58,7 +58,7 @@ Este proyecto puede ser utilizado como base para el desarrollo de otras APIs RES
 | Response | 200 OK |   404 Not Found                  |
 | :-------- | :------- | :-------------------------------- |
 
-#### **Delete customer**
+### **Delete customer**
 ```http
   DELETE /api/clientes/{id}
 ```
