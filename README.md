@@ -12,3 +12,6 @@ También se ha incluido la validación de datos utilizando Java Bean Validator, 
 Por último, se ha habilitado la configuración CORS para permitir el acceso a la API desde diferentes orígenes.
 
 Este proyecto puede ser utilizado como base para el desarrollo de otras APIs REST utilizando Java y Spring Boot, y se espera que sea de utilidad para aquellos que buscan aprender sobre el desarrollo de APIs REST con Spring Boot.
+
+##ANGULAR BACKEND
+[Proyecto ANGULAR](https://github.com/Rpeche-pk/angular-clientes-app.git)
