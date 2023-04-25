@@ -39,7 +39,7 @@ Este proyecto puede ser utilizado como base para el desarrollo de otras APIs RES
 ### **Create customer**
 
 ```http
-  http://localhost:8080/api/clientes
+  POST /api/clientes
 ```
 
 | Response | 201 Created |   400 Bad Request                   |
