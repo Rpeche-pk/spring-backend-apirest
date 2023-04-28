@@ -1,8 +1,8 @@
-package com.lrpa.springboot.backend.apirest.models.services.impl;
+package com.lrpa.springboot.backend.apirest.services.impl;
 
 import com.lrpa.springboot.backend.apirest.models.dao.IClienteDao;
 import com.lrpa.springboot.backend.apirest.models.entity.Cliente;
-import com.lrpa.springboot.backend.apirest.models.services.IClienteService;
+import com.lrpa.springboot.backend.apirest.services.IClienteService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

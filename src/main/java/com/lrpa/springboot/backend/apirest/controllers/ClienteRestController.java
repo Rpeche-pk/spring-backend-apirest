@@ -1,17 +1,19 @@
 package com.lrpa.springboot.backend.apirest.controllers;
 
 import com.lrpa.springboot.backend.apirest.models.entity.Cliente;
-import com.lrpa.springboot.backend.apirest.models.services.IClienteService;
+import com.lrpa.springboot.backend.apirest.services.IClienteService;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import javax.validation.Valid;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @CrossOrigin(origins = {"http://localhost:4200"})
 @RestController
@@ -52,32 +54,54 @@ public class ClienteRestController {
 
     @PostMapping("/clientes")
     //@ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> create(@RequestBody Cliente cliente) {
+    public ResponseEntity<?> create(@Valid @RequestBody Cliente cliente, BindingResult result) {
 
         Cliente clienteNew=null;
         Map<String, Object> response = new HashMap<>();
         StringBuilder sb = new StringBuilder();
 
+        if (result.hasErrors()) {
+
+            List<String> errors= result.getFieldErrors()
+                    .stream()
+                    .map(e-> "El campo "+ e.getField()+" "+e.getDefaultMessage())
+                            .collect(Collectors.toList());
+
+            response.put("errors",errors);
+            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
+        }
+
         try {
             clienteNew =clienteService.save(cliente);
         } catch (DataAccessException e) {
             response.put("message", "Error al realizar insert a la base de datos");
-            response.put("error", sb.append(e.getMessage()).append(" : ").append(e.getMostSpecificCause().getMessage()));
+            response.put("error", sb.append(e.getMostSpecificCause().getMessage()));
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
         response.put("Message","Cliente creado con exito!!");
-        response.put("cliente",clienteNew);
+        response.put("customer",clienteNew);
 
         return new ResponseEntity<Map<String,Object>>(response, HttpStatus.CREATED);
     }
 
     @PutMapping("/clientes/{id}")
-    public ResponseEntity<?> update(@RequestBody Cliente cliente, @PathVariable Long id) {
+    public ResponseEntity<?> update(@Valid @RequestBody Cliente cliente, BindingResult result,@PathVariable Long id) {
         Cliente clienteCurrent = clienteService.findById(id);
         Cliente clienteUpdate = null;
 
         Map<String, Object> response = new HashMap<>();
         StringBuilder sb = new StringBuilder();
+
+        if (result.hasErrors()) {
+
+            List<String> errors= result.getFieldErrors()
+                    .stream()
+                    .map(e-> "El campo "+ e.getField()+" "+e.getDefaultMessage())
+                    .collect(Collectors.toList());
+
+            response.put("errors",errors);
+            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
+        }
 
         if (clienteCurrent == null) {
             response.put("message", sb.append("Error: no se puede editar, el cliente Id: ")
@@ -97,8 +121,7 @@ public class ClienteRestController {
         } catch (DataAccessException e) {
             response.put("message", sb.append("Error al actualizar el cliente en la base de datos ")
                     .append(clienteCurrent.getId().toString()));
-            response.put("error", sb.append(e.getMessage()).append(": ")
-                    .append(e.getMostSpecificCause().toString()));
+            response.put("error", sb.append(e.getMostSpecificCause().toString()));
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -119,7 +142,7 @@ public class ClienteRestController {
             clienteService.delete(id);
         }catch (DataAccessException e) {
             response.put("message", "Error al eliminar cliente en la base de datos");
-            response.put("error", sb.append(e.getMessage()).append(" : ").append(e.getMostSpecificCause().getMessage()));
+            response.put("error", sb.append(e.getMostSpecificCause().getMessage()));
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 

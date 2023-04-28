@@ -1,4 +1,4 @@
-package com.lrpa.springboot.backend.apirest.models.services;
+package com.lrpa.springboot.backend.apirest.services;
 
 import com.lrpa.springboot.backend.apirest.models.entity.Cliente;
 
