@@ -4,15 +4,18 @@ import com.lrpa.springboot.backend.apirest.models.entity.Cliente;
 import com.lrpa.springboot.backend.apirest.services.IClienteService;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.DuplicateKeyException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @CrossOrigin(origins = {"http://localhost:4200"})
@@ -26,6 +29,13 @@ public class ClienteRestController {
     @GetMapping("/clientes")
     public List<Cliente> index() {
         return clienteService.findAll();
+    }
+    @GetMapping("/clientes/page/{page}")
+    public Page<Cliente> index(@PathVariable Integer page) {
+        Page<Cliente> cli= clienteService.limitFindAll(PageRequest.of(page,4));
+        cli.getContent();
+                cli.getNumber();
+        return clienteService.limitFindAll(PageRequest.of(page,4));
     }
 
     @GetMapping("/clientes/{id}")
