@@ -30,6 +30,7 @@ public class ClienteRestController {
     public List<Cliente> index() {
         return clienteService.findAll();
     }
+
     @GetMapping("/clientes/page/{page}")
     public Page<Cliente> index(@PathVariable Integer page) {
         Page<Cliente> cli= clienteService.limitFindAll(PageRequest.of(page,4));
