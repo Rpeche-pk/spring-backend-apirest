@@ -1,8 +1,15 @@
 package com.lrpa.springboot.backend.apirest.controllers;
 
+import com.lrpa.springboot.backend.apirest.exceptions.FileUnknownException;
 import com.lrpa.springboot.backend.apirest.models.entity.Cliente;
 import com.lrpa.springboot.backend.apirest.services.IClienteService;
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.dao.DataAccessException;
@@ -25,13 +32,20 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @CrossOrigin(origins = {"http://localhost:4200"})
 @RestController
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RequestMapping("/api")
 public class ClienteRestController {
 
+    @NonNull
     private final IClienteService clienteService;
+
+
+    @Value("${exception.descripcion}")
+    private String DESCRIPTION;
+
 
     @GetMapping("/clientes")
     public List<Cliente> index() {
@@ -181,31 +195,34 @@ public class ClienteRestController {
     }
 
     @PostMapping("/clientes/upload")
-    public ResponseEntity<?> upload(@RequestParam("archivo")MultipartFile archivo, @RequestParam("id") Long id){
+    public ResponseEntity<?> upload(@RequestParam("archivo")MultipartFile archivo, @RequestParam("id") Long id) {
         Map<String, Object> response = new HashMap<>();
         StringBuilder sb = new StringBuilder();
 
         Cliente cliente= clienteService.findById(id);
+
+
         if (!archivo.isEmpty()) {
-            String nombreArchivo = UUID.randomUUID().toString()+"_"+ archivo.getOriginalFilename().replace(" ",""); //nombre del archivo original con su extension
+            String nombreArchivo = UUID.randomUUID().toString() + "_" + archivo.getOriginalFilename().replace(" ", ""); //nombre del archivo original con su extension
 
             //Este path Paths.get -> se utiliza para crear un objeto Path a partir de una cadena que representa una ruta en el sistema de archivos.
             // + RESOLVE ->combina dos rutas para crear una nueva ruta
             //  .toAbsolutepath convierte en un path comppelto
             Path rutaArchivo = Paths.get("uploads").resolve(nombreArchivo).toAbsolutePath();
+            log.info(rutaArchivo.toString());
 
-            try(var archivoGetInput= archivo.getInputStream();) {
+            try (var archivoGetInput = archivo.getInputStream();) {
 
                 Files.copy(archivoGetInput, rutaArchivo);
             } catch (IOException e) {
                 response.put("message", "Error al subir la imagen del cliente en la base de datos");
-                response.put("error", sb.append(e.getMessage()+" ").append(e.getCause().getMessage()));
+                response.put("error", sb.append(e.getMessage() + " ").append(e.getCause().getMessage()));
                 return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
             String nombreFotoAnterior = cliente.getFoto();
-            if (nombreFotoAnterior != null && nombreFotoAnterior.length()>0) {
-                Path rutaFotoAnterior= Paths.get("uploads").resolve(nombreFotoAnterior).toAbsolutePath();
+            if (nombreFotoAnterior != null && nombreFotoAnterior.length() > 0) {
+                Path rutaFotoAnterior = Paths.get("uploads").resolve(nombreFotoAnterior).toAbsolutePath();
                 File archivoFotoAnterior = rutaFotoAnterior.toFile();
 
                 if (archivoFotoAnterior.exists() && archivoFotoAnterior.canRead()) {
@@ -216,7 +233,12 @@ public class ClienteRestController {
             clienteService.save(cliente);
 
             response.put("cliente", cliente);
-            response.put("mensaje", "Has subido correctamente la imagen: "+ nombreArchivo);
+            response.put("mensaje", "Has subido correctamente la imagen: " + nombreArchivo);
+        }else{
+
+
+            throw new FileUnknownException(DESCRIPTION+" No ha subido ninguna foto o imagen.");
+
         }
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
     }
@@ -227,7 +249,7 @@ public class ClienteRestController {
         Path rutaArchivo = Paths.get("uploads").resolve(nombreFoto).toAbsolutePath();
         //convirtiendo un path a recurso
         Resource recurso= null;
-
+        log.info(rutaArchivo.toString());
         try {
             recurso= new UrlResource(rutaArchivo.toUri());
 
