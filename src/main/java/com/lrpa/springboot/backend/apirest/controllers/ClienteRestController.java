@@ -3,15 +3,12 @@ package com.lrpa.springboot.backend.apirest.controllers;
 import com.lrpa.springboot.backend.apirest.exceptions.FileUnknownException;
 import com.lrpa.springboot.backend.apirest.models.entity.Cliente;
 import com.lrpa.springboot.backend.apirest.services.IClienteService;
+import com.lrpa.springboot.backend.apirest.services.IUploadFileService;
 import lombok.AllArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,28 +20,33 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
 @CrossOrigin(origins = {"http://localhost:4200"})
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api")
 public class ClienteRestController {
 
-    @NonNull
     private final IClienteService clienteService;
+    private final IUploadFileService uploadFileService;
+    private final IUploadFileService uploadFileService2;
 
+    public ClienteRestController(IClienteService clienteService,
+                                 @Qualifier("testeo1") IUploadFileService uploadFileService,
+                                 @Qualifier("testeo") IUploadFileService uploadFileService2) {
+        this.clienteService = clienteService;
+        this.uploadFileService = uploadFileService;
+        this.uploadFileService2=uploadFileService2;
+    }
 
-    @Value("${exception.descripcion}")
-    private String DESCRIPTION;
+    private static final String DESCRIPTION="Bad Request Exception (400)";
 
 
     @GetMapping("/clientes")
@@ -54,10 +56,10 @@ public class ClienteRestController {
 
     @GetMapping("/clientes/page/{page}")
     public Page<Cliente> index(@PathVariable Integer page) {
-        Page<Cliente> cli= clienteService.limitFindAll(PageRequest.of(page,4));
+        Page<Cliente> cli = clienteService.limitFindAll(PageRequest.of(page, 4));
         cli.getContent();
-                cli.getNumber();
-        return clienteService.limitFindAll(PageRequest.of(page,4));
+        cli.getNumber();
+        return clienteService.limitFindAll(PageRequest.of(page, 4));
     }
 
     @GetMapping("/clientes/{id}")
@@ -88,36 +90,36 @@ public class ClienteRestController {
     //@ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> create(@Valid @RequestBody Cliente cliente, BindingResult result) {
 
-        Cliente clienteNew=null;
+        Cliente clienteNew = null;
         Map<String, Object> response = new HashMap<>();
         StringBuilder sb = new StringBuilder();
 
         if (result.hasErrors()) {
 
-            List<String> errors= result.getFieldErrors()
+            List<String> errors = result.getFieldErrors()
                     .stream()
-                    .map(e-> "El campo "+ e.getField()+" "+e.getDefaultMessage())
-                            .collect(Collectors.toList());
+                    .map(e -> "El campo " + e.getField() + " " + e.getDefaultMessage())
+                    .collect(Collectors.toList());
 
-            response.put("errors",errors);
+            response.put("errors", errors);
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
         }
 
         try {
-            clienteNew =clienteService.save(cliente);
+            clienteNew = clienteService.save(cliente);
         } catch (DataAccessException e) {
             response.put("message", "Error al realizar insert a la base de datos");
             response.put("error", sb.append(e.getMostSpecificCause().getMessage()));
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        response.put("Message","Cliente creado con exito!!");
-        response.put("customer",clienteNew);
+        response.put("Message", "Cliente creado con exito!!");
+        response.put("customer", clienteNew);
 
-        return new ResponseEntity<Map<String,Object>>(response, HttpStatus.CREATED);
+        return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
     }
 
     @PutMapping("/clientes/{id}")
-    public ResponseEntity<?> update(@Valid @RequestBody Cliente cliente, BindingResult result,@PathVariable Long id) {
+    public ResponseEntity<?> update(@Valid @RequestBody Cliente cliente, BindingResult result, @PathVariable Long id) {
         Cliente clienteCurrent = clienteService.findById(id);
         Cliente clienteUpdate = null;
 
@@ -126,12 +128,12 @@ public class ClienteRestController {
 
         if (result.hasErrors()) {
 
-            List<String> errors= result.getFieldErrors()
+            List<String> errors = result.getFieldErrors()
                     .stream()
-                    .map(e-> "El campo "+ e.getField()+" "+e.getDefaultMessage())
+                    .map(e -> "El campo " + e.getField() + " " + e.getDefaultMessage())
                     .collect(Collectors.toList());
 
-            response.put("errors",errors);
+            response.put("errors", errors);
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
         }
 
@@ -171,49 +173,39 @@ public class ClienteRestController {
         StringBuilder sb = new StringBuilder();
 
         try {
-            Cliente cliente= clienteService.findById(id);
+            Cliente cliente = clienteService.findById(id);
             String nombreFotoAnterior = cliente.getFoto();
-            if (nombreFotoAnterior != null && nombreFotoAnterior.length()>0) {
-                Path rutaFotoAnterior= Paths.get("uploads").resolve(nombreFotoAnterior).toAbsolutePath();
-                File archivoFotoAnterior = rutaFotoAnterior.toFile();
 
-                if (archivoFotoAnterior.exists() && archivoFotoAnterior.canRead()) {
-                    archivoFotoAnterior.delete();
-                }
-            }
+            uploadFileService.eliminar(nombreFotoAnterior);
 
             clienteService.delete(id);
-        }catch (DataAccessException e) {
+        } catch (DataAccessException e) {
             response.put("message", "Error al eliminar cliente en la base de datos");
             response.put("error", sb.append(e.getMostSpecificCause().getMessage()));
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         response.put("Message", "Cliente eliminado con éxito!!!");
-        return new ResponseEntity<Map<String,Object>>(response, HttpStatus.OK);
+        return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
 
     }
 
     @PostMapping("/clientes/upload")
-    public ResponseEntity<?> upload(@RequestParam("archivo")MultipartFile archivo, @RequestParam("id") Long id) {
+    public ResponseEntity<?> upload(@RequestParam("archivo") MultipartFile archivo, @RequestParam("id") Long id) {
         Map<String, Object> response = new HashMap<>();
         StringBuilder sb = new StringBuilder();
 
-        Cliente cliente= clienteService.findById(id);
+        Cliente cliente = clienteService.findById(id);
 
 
         if (!archivo.isEmpty()) {
-            String nombreArchivo = UUID.randomUUID().toString() + "_" + archivo.getOriginalFilename().replace(" ", ""); //nombre del archivo original con su extension
 
-            //Este path Paths.get -> se utiliza para crear un objeto Path a partir de una cadena que representa una ruta en el sistema de archivos.
-            // + RESOLVE ->combina dos rutas para crear una nueva ruta
-            //  .toAbsolutepath convierte en un path comppelto
-            Path rutaArchivo = Paths.get("uploads").resolve(nombreArchivo).toAbsolutePath();
-            log.info(rutaArchivo.toString());
+            String nombreArchivo = null;
 
-            try (var archivoGetInput = archivo.getInputStream();) {
+            try {
+                nombreArchivo = uploadFileService.copiar(archivo);
 
-                Files.copy(archivoGetInput, rutaArchivo);
+
             } catch (IOException e) {
                 response.put("message", "Error al subir la imagen del cliente en la base de datos");
                 response.put("error", sb.append(e.getMessage() + " ").append(e.getCause().getMessage()));
@@ -221,23 +213,17 @@ public class ClienteRestController {
             }
 
             String nombreFotoAnterior = cliente.getFoto();
-            if (nombreFotoAnterior != null && nombreFotoAnterior.length() > 0) {
-                Path rutaFotoAnterior = Paths.get("uploads").resolve(nombreFotoAnterior).toAbsolutePath();
-                File archivoFotoAnterior = rutaFotoAnterior.toFile();
+            uploadFileService.eliminar(nombreFotoAnterior);
 
-                if (archivoFotoAnterior.exists() && archivoFotoAnterior.canRead()) {
-                    archivoFotoAnterior.delete();
-                }
-            }
             cliente.setFoto(nombreArchivo);
             clienteService.save(cliente);
 
             response.put("cliente", cliente);
             response.put("mensaje", "Has subido correctamente la imagen: " + nombreArchivo);
-        }else{
+        } else {
 
 
-            throw new FileUnknownException(DESCRIPTION+" No ha subido ninguna foto o imagen.");
+            throw new FileUnknownException(DESCRIPTION + " No ha subido ninguna foto o imagen.");
 
         }
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
@@ -246,26 +232,18 @@ public class ClienteRestController {
     @GetMapping("/uploads/img/{nombreFoto:.+}")
     public ResponseEntity<Resource> verFoto(@PathVariable String nombreFoto) {
 
-        Path rutaArchivo = Paths.get("uploads").resolve(nombreFoto).toAbsolutePath();
-        //convirtiendo un path a recurso
-        Resource recurso= null;
-        log.info(rutaArchivo.toString());
+        Resource recurso = null;
         try {
-            recurso= new UrlResource(rutaArchivo.toUri());
-
+            recurso = uploadFileService.cargar(nombreFoto);
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
 
-        if (!recurso.exists() && !recurso.isReadable()) {
-            throw new RuntimeException("Error no se pudo cargar la imagen: "+ nombreFoto);
-        }
-
         //Para descargar la imagen o archivo que envias al response entity
         HttpHeaders cabecera = new HttpHeaders();
-        cabecera.add(HttpHeaders.CONTENT_DISPOSITION,"attachment; filename=\""+ recurso.getFilename()+ "\"");
+        cabecera.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + recurso.getFilename() + "\"");
 
-        return new ResponseEntity<Resource>(recurso,cabecera,HttpStatus.OK);
+        return new ResponseEntity<Resource>(recurso, cabecera, HttpStatus.OK);
     }
 
 
