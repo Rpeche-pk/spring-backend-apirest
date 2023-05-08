@@ -31,20 +31,12 @@ import java.util.stream.Collectors;
 @Slf4j
 @CrossOrigin(origins = {"http://localhost:4200"})
 @RestController
+@AllArgsConstructor
 @RequestMapping("/api")
 public class ClienteRestController {
 
     private final IClienteService clienteService;
     private final IUploadFileService uploadFileService;
-    private final IUploadFileService uploadFileService2;
-
-    public ClienteRestController(IClienteService clienteService,
-                                 @Qualifier("testeo1") IUploadFileService uploadFileService,
-                                 @Qualifier("testeo") IUploadFileService uploadFileService2) {
-        this.clienteService = clienteService;
-        this.uploadFileService = uploadFileService;
-        this.uploadFileService2=uploadFileService2;
-    }
 
     private static final String DESCRIPTION="Bad Request Exception (400)";
 

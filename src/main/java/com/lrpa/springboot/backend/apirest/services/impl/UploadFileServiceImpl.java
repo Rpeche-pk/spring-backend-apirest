@@ -17,8 +17,7 @@ import java.nio.file.Paths;
 import java.util.UUID;
 
 @Slf4j
-@Service("testeo1")
-//@Qualifier("")
+@Service()
 public class UploadFileServiceImpl implements IUploadFileService {
 
     private final static String DIRECTORIO_UPLOAD = "uploads";
