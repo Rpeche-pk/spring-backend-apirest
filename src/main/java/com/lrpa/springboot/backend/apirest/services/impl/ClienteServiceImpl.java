@@ -2,6 +2,7 @@ package com.lrpa.springboot.backend.apirest.services.impl;
 
 import com.lrpa.springboot.backend.apirest.models.dao.IClienteDao;
 import com.lrpa.springboot.backend.apirest.models.entity.Cliente;
+import com.lrpa.springboot.backend.apirest.models.entity.Region;
 import com.lrpa.springboot.backend.apirest.services.IClienteService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -20,6 +21,7 @@ public class ClienteServiceImpl implements IClienteService {
     @Override
     @Transactional(readOnly = true)
     public List<Cliente> findAll() {
+
         return (List<Cliente>) clienteDao.findAll();
     }
 
@@ -45,5 +47,11 @@ public class ClienteServiceImpl implements IClienteService {
     @Override
     public Cliente findById(Long id) {
         return clienteDao.findById(id).orElse(null);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Region> findAllRegiones() {
+        return clienteDao.findAllRegiones();
     }
 }

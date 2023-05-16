@@ -2,12 +2,11 @@ package com.lrpa.springboot.backend.apirest.controllers;
 
 import com.lrpa.springboot.backend.apirest.exceptions.FileUnknownException;
 import com.lrpa.springboot.backend.apirest.models.entity.Cliente;
+import com.lrpa.springboot.backend.apirest.models.entity.Region;
 import com.lrpa.springboot.backend.apirest.services.IClienteService;
 import com.lrpa.springboot.backend.apirest.services.IUploadFileService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
@@ -38,7 +37,7 @@ public class ClienteRestController {
     private final IClienteService clienteService;
     private final IUploadFileService uploadFileService;
 
-    private static final String DESCRIPTION="Bad Request Exception (400)";
+    private static final String DESCRIPTION = "Bad Request Exception (400)";
 
 
     @GetMapping("/clientes")
@@ -141,6 +140,7 @@ public class ClienteRestController {
             clienteCurrent.setApellido(cliente.getApellido());
             clienteCurrent.setEmail(cliente.getEmail());
             clienteCurrent.setCreateAt(cliente.getCreateAt());
+            clienteCurrent.setRegion(cliente.getRegion());
 
             clienteUpdate = clienteService.save(clienteCurrent);
 
@@ -236,6 +236,11 @@ public class ClienteRestController {
         cabecera.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + recurso.getFilename() + "\"");
 
         return new ResponseEntity<Resource>(recurso, cabecera, HttpStatus.OK);
+    }
+
+    @GetMapping("/clientes/regiones")
+    public List<Region> listarRegiones() {
+        return clienteService.findAllRegiones();
     }
 
 

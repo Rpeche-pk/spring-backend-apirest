@@ -1,5 +1,6 @@
 package com.lrpa.springboot.backend.apirest.models.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -40,6 +41,12 @@ public class Cliente implements Serializable {
     @NotNull(message = "no puede estar vacio")
     private Date createAt;
     private String foto;
+
+    @NotNull(message = "la región no puede ser vacia, no seas tarado")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "region_id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
+    private Region region;
 
 
     //crea la instancia de fecha antes de persistir en la bbdd, no lo necesitamos ya que lo vamos a manejar
