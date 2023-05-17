@@ -2,6 +2,7 @@ package com.lrpa.springboot.backend.apirest.services.impl;
 
 import com.lrpa.springboot.backend.apirest.models.dao.IUsuarioDao;
 import com.lrpa.springboot.backend.apirest.models.entity.Usuario;
+import com.lrpa.springboot.backend.apirest.services.IUsuarioService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 @Slf4j
-public class UsuarioService implements UserDetailsService {
+public class UsuarioService implements UserDetailsService, IUsuarioService {
 
     private IUsuarioDao usuarioDao;
     @Override
@@ -53,5 +54,11 @@ public class UsuarioService implements UserDetailsService {
                 .build();
         System.out.println(userDetails);
         return userDetails;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Usuario findByUsername(String username) {
+        return usuarioDao.findByUsername(username);
     }
 }

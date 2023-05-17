@@ -1,6 +1,5 @@
 package com.lrpa.springboot.backend.apirest.auth;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -10,8 +9,11 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.A
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
+
+import java.util.Arrays;
 
 @Configuration
 @EnableAuthorizationServer
@@ -20,9 +22,13 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     private final BCryptPasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
 
-    public AuthorizationServerConfig(BCryptPasswordEncoder passwordEncoder, @Qualifier("authenticationManager") AuthenticationManager authenticationManager) {
+    private final TokenAdditionalInf tokenAdditionalInf;
+
+    //quite @Qualifier("authenticationManager")
+    public AuthorizationServerConfig(BCryptPasswordEncoder passwordEncoder,  AuthenticationManager authenticationManager, TokenAdditionalInf tokenAdditionalInf) {
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
+        this.tokenAdditionalInf = tokenAdditionalInf;
     }
 
     @Override
@@ -44,9 +50,14 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
+
+        TokenEnhancerChain tokenEnhancerChain= new TokenEnhancerChain();
+        tokenEnhancerChain.setTokenEnhancers(Arrays.asList(tokenAdditionalInf,accessTokenConverter()));
+
         endpoints.authenticationManager(authenticationManager)
                 .tokenStore(tokenStore())
-                .accessTokenConverter(accessTokenConverter());
+                .accessTokenConverter(accessTokenConverter())
+                .tokenEnhancer(tokenEnhancerChain);
     }
 
     @Bean
@@ -57,6 +68,8 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Bean
     public JwtAccessTokenConverter accessTokenConverter() {
         JwtAccessTokenConverter jwtAccessTokenConverter = new JwtAccessTokenConverter();
+        jwtAccessTokenConverter.setSigningKey(JwtConfig.RSA_PRIVATE);
+        jwtAccessTokenConverter.setVerifierKey(JwtConfig.RSA_PUBLIC);
         return jwtAccessTokenConverter;
     }
 
