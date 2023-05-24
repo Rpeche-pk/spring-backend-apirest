@@ -1,8 +1,11 @@
 package com.lrpa.springboot.backend.apirest.services.impl;
 
+import com.lrpa.springboot.backend.apirest.models.dao.IRoleDao;
 import com.lrpa.springboot.backend.apirest.models.dao.IUsuarioDao;
+import com.lrpa.springboot.backend.apirest.models.entity.Role;
 import com.lrpa.springboot.backend.apirest.models.entity.Usuario;
 import com.lrpa.springboot.backend.apirest.services.IUsuarioService;
+import com.lrpa.springboot.backend.apirest.services.RoleService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
@@ -21,9 +24,10 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 @Slf4j
-public class UsuarioService implements UserDetailsService, IUsuarioService {
+public class UsuarioService implements UserDetailsService, IUsuarioService, RoleService {
 
     private IUsuarioDao usuarioDao;
+    private IRoleDao roleDao;
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) {
@@ -60,5 +64,15 @@ public class UsuarioService implements UserDetailsService, IUsuarioService {
     @Transactional(readOnly = true)
     public Usuario findByUsername(String username) {
         return usuarioDao.findByUsername(username);
+    }
+
+    @Override
+    public Usuario save(Usuario usuario) {
+        return usuarioDao.save(usuario);
+    }
+
+    @Override
+    public Optional<Role> findById(Long id) {
+        return roleDao.findById(id);
     }
 }

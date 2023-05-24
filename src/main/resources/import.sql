@@ -23,8 +23,8 @@ INSERT INTO clientes (region_id, nombre, apellido, email, create_at) VALUES(6, '
 INSERT INTO clientes (region_id, nombre, apellido, email, create_at) VALUES(7, 'Jade', 'Doe', 'jane.doe@gmail.com', '2018-03-06');
 
 /* Creamos algunos usuarios con sus roles */
-INSERT INTO usuarios (username, password, enabled) VALUES ('angela','$2a$10$uBzCqFyXfPyaVggOAs/1x.sn53xm5/c2iV93bNuZTi.xVn79BeEjO',1);
-INSERT INTO usuarios (username, password, enabled) VALUES ('admin','$2a$10$FyaILajSRYwNTz.Klv7vs.2DjYnpgcl1M3hiX1h5eDtSQp2xLZZ56',1);
+INSERT INTO usuarios (username, password, enabled,nombre, apellido, email) VALUES ('angela','$2a$10$uBzCqFyXfPyaVggOAs/1x.sn53xm5/c2iV93bNuZTi.xVn79BeEjO',1,'Angela','Peña','angelita97@gmail.com');
+INSERT INTO usuarios (username, password, enabled,nombre, apellido, email) VALUES ('admin','$2a$10$FyaILajSRYwNTz.Klv7vs.2DjYnpgcl1M3hiX1h5eDtSQp2xLZZ56',1,'Luis','Peche','luispe@gmail.com');
 
 INSERT INTO roles (nombre) VALUES ('ROLE_USER');
 INSERT INTO roles (nombre) VALUES ('ROLE_ADMIN');
