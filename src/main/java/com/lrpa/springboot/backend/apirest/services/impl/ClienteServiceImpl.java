@@ -1,7 +1,9 @@
 package com.lrpa.springboot.backend.apirest.services.impl;
 
 import com.lrpa.springboot.backend.apirest.models.dao.IClienteDao;
+import com.lrpa.springboot.backend.apirest.models.dao.IFacturaDao;
 import com.lrpa.springboot.backend.apirest.models.entity.Cliente;
+import com.lrpa.springboot.backend.apirest.models.entity.Factura;
 import com.lrpa.springboot.backend.apirest.models.entity.Region;
 import com.lrpa.springboot.backend.apirest.services.IClienteService;
 import lombok.AllArgsConstructor;
@@ -17,6 +19,7 @@ import java.util.List;
 public class ClienteServiceImpl implements IClienteService {
 
     private final IClienteDao clienteDao;
+    private final IFacturaDao facturaDao;
 
     @Override
     @Transactional(readOnly = true)
@@ -53,5 +56,23 @@ public class ClienteServiceImpl implements IClienteService {
     @Transactional(readOnly = true)
     public List<Region> findAllRegiones() {
         return clienteDao.findAllRegiones();
+    }
+
+    @Override
+    @Transactional
+    public Factura findFacturaById(Long id) {
+        return facturaDao.findById(id).orElse(null);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Factura saveFacturaById(Factura factura) {
+        return facturaDao.save(factura);
+    }
+
+    @Override
+    @Transactional
+    public void deleteFacturaById(Long id) {
+        facturaDao.deleteById(id);
     }
 }

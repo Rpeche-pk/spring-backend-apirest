@@ -1,6 +1,8 @@
 package com.lrpa.springboot.backend.apirest.models.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -11,7 +13,9 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -48,6 +52,15 @@ public class Cliente implements Serializable {
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
     private Region region;
 
+    @JsonIgnoreProperties({"cliente","hibernateLazyInitializer","handler"})
+    //@JsonManagedReference
+    //@JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "cliente", cascade = CascadeType.ALL)
+    private List<Factura> facturas;
+
+    public Cliente(){
+        this.facturas= new ArrayList<>();
+    }
 
     //crea la instancia de fecha antes de persistir en la bbdd, no lo necesitamos ya que lo vamos a manejar
     //en el frontend con un dataPicker
