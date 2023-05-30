@@ -52,7 +52,7 @@ public class Cliente implements Serializable {
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
     private Region region;
 
-    @JsonIgnoreProperties({"cliente","hibernateLazyInitializer","handler"})
+    @JsonIgnoreProperties(value = {"cliente","hibernateLazyInitializer","handler"}, allowSetters = true)
     //@JsonManagedReference
     //@JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "cliente", cascade = CascadeType.ALL)

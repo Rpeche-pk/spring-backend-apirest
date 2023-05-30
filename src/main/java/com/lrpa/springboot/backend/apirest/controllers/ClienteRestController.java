@@ -31,7 +31,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
-@CrossOrigin(origins = {"http://localhost:4200"})
+@CrossOrigin(origins = {"http://localhost:4200","*"})
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api")
@@ -103,7 +103,7 @@ public class ClienteRestController {
         return clienteService.limitFindAll(PageRequest.of(page, 4));
     }
 
-    //@Secured({"ROLE_ADMIN","ROLE_USER"})
+    @Secured({"ROLE_ADMIN","ROLE_USER"})
     @GetMapping("/clientes/{id}")
     public ResponseEntity<?> show(@PathVariable Long id) {
 
