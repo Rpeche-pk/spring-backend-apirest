@@ -19,6 +19,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 import java.util.Arrays;
+import java.util.List;
 
 @EnableGlobalMethodSecurity(securedEnabled = true)
 @Configuration
@@ -63,7 +64,9 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         CorsConfiguration config= new CorsConfiguration();
         //permitir el domnio del origen que hara las consultas
         //configurara los metodos que aceptara en el backend
-        config.setAllowedOrigins(Arrays.asList("http://localhost:4200","*"));
+
+        //config.setAllowedOrigins(List.of("http://localhost:4200"));
+        config.setAllowedOriginPatterns(List.of("http://localhost:4200","*"));
         config.setAllowedMethods(Arrays.asList("GET","POST","PUT","DELETE","OPTIONS"));
         config.setAllowCredentials(true);
         config.setAllowedHeaders(Arrays.asList("Content-Type","Authorization"));

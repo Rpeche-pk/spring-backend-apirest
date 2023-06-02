@@ -21,7 +21,6 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
     private final BCryptPasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
-
     private final TokenAdditionalInf tokenAdditionalInf;
 
     //quite @Qualifier("authenticationManager")

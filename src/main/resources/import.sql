@@ -1,15 +1,15 @@
-INSERT INTO regiones (id, nombre) VALUES (1, 'SudamÈrica');
-INSERT INTO regiones (id, nombre) VALUES (2, 'CentroamÈrica');
-INSERT INTO regiones (id, nombre) VALUES (3, 'NorteamÈrica');
+INSERT INTO regiones (id, nombre) VALUES (1, 'Sudam√©rica');
+INSERT INTO regiones (id, nombre) VALUES (2, 'Centroam√©rica');
+INSERT INTO regiones (id, nombre) VALUES (3, 'Norteam√©rica');
 INSERT INTO regiones (id, nombre) VALUES (4, 'Europa');
 INSERT INTO regiones (id, nombre) VALUES (5, 'Asia');
 INSERT INTO regiones (id, nombre) VALUES (6, 'Africa');
-INSERT INTO regiones (id, nombre) VALUES (7, 'OceanÌa');
-INSERT INTO regiones (id, nombre) VALUES (8, 'Ant·rtida');
-INSERT INTO clientes (region_id, nombre, apellido, email, create_at) VALUES(1,'Angela', 'PeÒa', 'DoctoraVilchez@bolsadeideas.com', '2018-01-01');
+INSERT INTO regiones (id, nombre) VALUES (7, 'Ocean√≠a');
+INSERT INTO regiones (id, nombre) VALUES (8, 'Ant√°rtida');
+INSERT INTO clientes (region_id, nombre, apellido, email, create_at) VALUES(1,'Angela', 'Pe√±a', 'DoctoraVilchez@bolsadeideas.com', '2018-01-01');
 INSERT INTO clientes (region_id, nombre, apellido, email, create_at) VALUES(4,'Robert', 'Plant', 'Plant.roe@gmail.com', '2018-03-05');
 INSERT INTO clientes (region_id, nombre, apellido, email, create_at) VALUES(1,'Gustavo', 'Cerati', 'gcc.doe@gmail.com', '2018-03-06');
-INSERT INTO clientes (region_id, nombre, apellido, email, create_at) VALUES(1, 'AndrÈs', 'Guzm·n', 'profesor@bolsadeideas.com', '2018-01-01');
+INSERT INTO clientes (region_id, nombre, apellido, email, create_at) VALUES(1, 'Andr√©s', 'Guzm√°n', 'profesor@bolsadeideas.com', '2018-01-01');
 INSERT INTO clientes (region_id, nombre, apellido, email, create_at) VALUES(2, 'Mr. John', 'Doe', 'john.doe@gmail.com', '2018-01-02');
 INSERT INTO clientes (region_id, nombre, apellido, email, create_at) VALUES(4, 'Linus', 'Torvalds', 'linus.torvalds@gmail.com', '2018-01-03');
 INSERT INTO clientes (region_id, nombre, apellido, email, create_at) VALUES(4, 'Rasmus', 'Lerdorf', 'rasmus.lerdorf@gmail.com', '2018-01-04');
@@ -23,7 +23,7 @@ INSERT INTO clientes (region_id, nombre, apellido, email, create_at) VALUES(6, '
 INSERT INTO clientes (region_id, nombre, apellido, email, create_at) VALUES(7, 'Jade', 'Doe', 'jane.doe@gmail.com', '2018-03-06');
 
 /* Creamos algunos usuarios con sus roles */
-INSERT INTO usuarios (username, password, enabled,nombre, apellido, email) VALUES ('angela','$2a$10$uBzCqFyXfPyaVggOAs/1x.sn53xm5/c2iV93bNuZTi.xVn79BeEjO',1,'Angela','PeÒa','angelita97@gmail.com');
+INSERT INTO usuarios (username, password, enabled,nombre, apellido, email) VALUES ('angela','$2a$10$uBzCqFyXfPyaVggOAs/1x.sn53xm5/c2iV93bNuZTi.xVn79BeEjO',1,'Angela','Pe?a','angelita97@gmail.com');
 INSERT INTO usuarios (username, password, enabled,nombre, apellido, email) VALUES ('admin','$2a$10$FyaILajSRYwNTz.Klv7vs.2DjYnpgcl1M3hiX1h5eDtSQp2xLZZ56',1,'Luis','Peche','luispe@gmail.com');
 
 INSERT INTO roles (nombre) VALUES ('ROLE_USER');
